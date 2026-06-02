@@ -22,8 +22,9 @@ public class PrincipalComListas {
         lista.add(serie);
         for (Titulo item : lista) {
             System.out.println(item);
-            Filme novoFilme = (Filme) item;
-            System.out.println("Classificacao: " + novoFilme.getClassificacao());
+            if (item instanceof Filme novoFilme && novoFilme.getClassificacao() > 2){
+                System.out.println("Classificacao: " + novoFilme.getClassificacao());
+            }
         }
     }
 }
