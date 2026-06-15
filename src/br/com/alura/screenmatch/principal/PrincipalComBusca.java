@@ -6,6 +6,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import br.com.alura.screenmatch.excecao.ErroDeConversaoDeAnoException;
 import br.com.alura.screenmatch.modelo.Titulo;
 import br.com.alura.screenmatch.modelo.TituloOMDB;
 
@@ -22,24 +23,35 @@ public class PrincipalComBusca {
         System.out.println("Digite um filme para busca: ");
         var busca = scan.nextLine();
 
-        String url = "https://www.omdbapi.com/?t=" + busca + "&apikey=4ef38559";
+        String url = "https://www.omdbapi.com/?t=" + busca.replace(" ", "+") + "&apikey=4ef38559";
 
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-         .uri(URI.create(url))
-         .build();
-        
-        HttpResponse<String> response = client
-         .send(request, HttpResponse.BodyHandlers.ofString());
-         String json = response.body();
-         System.out.println(json);
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .build();
 
-        Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
-        
-        TituloOMDB meuTituloOMDB = gson.fromJson(json, TituloOMDB.class);
-        System.out.println(meuTituloOMDB);
-        Titulo meuTitulo = new Titulo(meuTituloOMDB);
-        System.out.println("Titulo já convertido");
-        System.out.println(meuTitulo);
+            HttpResponse<String> response = client
+                    .send(request, HttpResponse.BodyHandlers.ofString());
+            String json = response.body();
+            System.out.println(json);
+
+            Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE).create();
+
+            TituloOMDB meuTituloOMDB = gson.fromJson(json, TituloOMDB.class);
+            System.out.println(meuTituloOMDB);
+            Titulo meuTitulo = new Titulo(meuTituloOMDB);
+            System.out.println("Titulo já convertido");
+            System.out.println(meuTitulo);
+        } catch (NumberFormatException e) {
+            System.out.println("Aconteceu um erro.");
+            System.out.println(e.getMessage());
+        } catch (IllegalArgumentException e){
+            System.out.println("Algum erro de argumento na busca.");
+        } catch (ErroDeConversaoDeAnoException e) {
+            System.out.println(e.getMessage());
+        }
+
+        System.out.println("O programa finalizou corretamente.");
     }
 }
